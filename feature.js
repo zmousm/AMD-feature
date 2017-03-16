@@ -4,6 +4,8 @@
  * https://github.com/jensarps/AMD-feature
  *
  * @author Jens Arps - http://jensarps.de/
+ *   modified by Zenon Mousmoulas, GRNET
+ *   fork: https://github.com/zmousm/AMD-feature
  * @license MIT or BSD - https://github.com/jensarps/AMD-feature/blob/master/LICENSE
  * @version 1.2.0
  */
