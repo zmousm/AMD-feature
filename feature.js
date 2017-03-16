@@ -20,6 +20,11 @@
     return (isFunction && impl.isAvailable(name)) || (!isFunction && impl.isAvailable);
   }
 
+  function preemptDefinition(config) {
+    var preemptOption = ourName + '_preempt';
+    return !!config[preemptOption] && Boolean(config[preemptOption]);
+  }
+
   return {
 
     load: function (name, req, load, config) {
@@ -40,9 +45,16 @@
             impl = impl.call(featureInfo[i], name);
           }
           if (impl) {
+	      if (preemptDefinition(config)) {
+		req([toLoad], function(alias) {
+		  define(name, [], alias);
+		  load(alias);
+		});
+	      } else {
             req([impl], load);
           }
         }
+          }
 
         // We're done here now.
         return;
@@ -70,7 +82,11 @@
         if (typeof impl === 'string') {
           toLoad = impl;
         } else if (typeof impl === 'object' && ('module' in impl)) {
-          load(typeof impl.module === 'function' ? impl.module(name) : impl.module);
+            toLoad = typeof impl.module === 'function' ? impl.module(name) : impl.module;
+	    if (preemptDefinition(config)) {
+	      define(name, [], toLoad);
+	    }
+	    load(toLoad);
           return;
         } else {
           toLoad = impl.implementation;
@@ -78,7 +94,14 @@
             toLoad = impl.implementation(name);
           }
         }
+	  if (preemptDefinition(config)) {
+	    req([toLoad], function(alias) {
+	      define(name, [], alias);
+	      load(alias);
+	    });
+	  } else {
         req([toLoad], load);
+	  }
       } else {
         req([], load);
       }
