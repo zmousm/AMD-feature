@@ -106,7 +106,7 @@
             req([toLoad], load);
 	  }
 	} else {
-          req([], load);
+          req([name], load);
 	}
 
       });
