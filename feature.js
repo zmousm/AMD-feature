@@ -7,7 +7,12 @@
  * @license MIT or BSD - https://github.com/jensarps/AMD-feature/blob/master/LICENSE
  * @version 1.2.0
  */
-define(['implementations'], function (implementations) {
+;(function(factory) {
+  if (typeof define === 'function' && define.amd) {
+    define(['module'], factory);
+  }
+})(function(module) {
+  var ourName = module.id;
 
   // Check availability of implementation
   function isAvailable (impl, name) {
@@ -18,6 +23,9 @@ define(['implementations'], function (implementations) {
   return {
 
     load: function (name, req, load, config) {
+      var implementations = config[ourName + '_implementations'] || 'implementations';
+
+      req([implementations], function(implementations) {
 
       var i, impl, m, toLoad,
           featureInfo = implementations[name],
@@ -74,6 +82,9 @@ define(['implementations'], function (implementations) {
       } else {
         req([], load);
       }
+
+      });
+
     }
   };
 });
